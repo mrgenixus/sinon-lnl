@@ -23,10 +23,10 @@ describe('stubs', function() {
         return "this is a stub"
       });
 
-      assert.equal('this is a stub', ObjectA.aMethod());
+      assert.equal(undefined, ObjectA.aMethod());
     });
 
-    it('will identify that is was called', function () {
+    it('will identify that it was called', function () {
       var stubbedMethod = stub(ObjectA, 'aMethod');
 
       ObjectA.aMethod();
@@ -50,6 +50,50 @@ describe('stubs', function() {
       stub(ObjectA, 'aMethod');
 
       ObjectA.aMethod();
+      assert.equal(ObjectA.aMethod.calledOnce, true);
+      assert.notEqual(ObjectA.aMethod, original);
+
+      ObjectA.aMethod.restore();
+
+      assert.equal(ObjectA.aMethod.calledOnce, void(0));
+      assert.equal(ObjectA.aMethod, original);
+    });
+
+    it('returns stubbed function\'s return', function() {
+      stub(ObjectA, 'aMethod', function() { return "Hello World" });
+
+      var returnValue = ObjectA.aMethod();
+      assert.equal(returnValue, undefined);
+      assert.equal(ObjectA.aMethod.calledOnce, true);
+      assert.notEqual(ObjectA.aMethod, original);
+
+      ObjectA.aMethod.restore();
+
+      assert.equal(ObjectA.aMethod.calledOnce, void(0));
+      assert.equal(ObjectA.aMethod, original);
+    });
+
+    it('can have a predefined return value', function() {
+      stub(ObjectA, 'aMethod').returns("Hello World");
+
+      var returnValue = ObjectA.aMethod();
+      assert.equal(returnValue, "Hello World");
+      assert.equal(ObjectA.aMethod.calledOnce, true);
+      assert.notEqual(ObjectA.aMethod, original);
+
+      ObjectA.aMethod.restore();
+
+      assert.equal(ObjectA.aMethod.calledOnce, void(0));
+      assert.equal(ObjectA.aMethod, original);
+    });
+
+    it('can have override a stubbed fuunction\'s return value', function() {
+      stub(ObjectA, 'aMethod', function() {
+        return "Goodbye";
+      }).returns("Hello World");
+
+      var returnValue = ObjectA.aMethod();
+      assert.equal(returnValue, "Hello World");
       assert.equal(ObjectA.aMethod.calledOnce, true);
       assert.notEqual(ObjectA.aMethod, original);
 
